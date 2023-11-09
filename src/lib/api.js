@@ -33,7 +33,31 @@ export async function sleep(ms) {
  *  kom upp.
  */
 export async function searchLaunches(query) {
-  /* TODO útfæra */
+  const url = new URL('launch', API_URL);
+  url.searchParams.set('search', query);
+  url.searchParams.set('mode', 'list');
+  
+  let response;
+  try{
+    response = await fetch(url);
+  } catch (e){
+    console.error('villa', e);
+    return null;
+  }
+
+  if (!response.ok){
+    console.error('villa við að sækja gögn', response.status, response.statusText);
+    return null;
+  }
+
+  let json;
+  try{
+    json = await response.json();
+  }catch (e){
+    console.error('villa í json vinnslu');
+    return null;
+  }
+  return json.results;
 }
 
 /**

@@ -64,3 +64,10 @@ main {
 }
 
 /* TODO nánari stílar */
+
+.header{
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing);
+}
+

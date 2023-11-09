@@ -8,7 +8,13 @@ import { el } from './elements.js';
  * @returns {HTMLElement} Leitarform.
  */
 export function renderSearchForm(searchHandler, query = undefined) {
-  /* TODO útfæra */
+  const form = el('form', { class: 'form' },
+   el('input', { class: 'input', value: query ?? '', name: 'query'}),
+   el('button', { class: 'button'}, 'Leit'));
+
+  form.addEventListener('submit', searchHandler);
+
+  return form;
 }
 
 /**
@@ -17,7 +23,20 @@ export function renderSearchForm(searchHandler, query = undefined) {
  * @param {Element | undefined} searchForm Leitarform sem á að gera óvirkt.
  */
 function setLoading(parentElement, searchForm = undefined) {
-  /* TODO útfæra */
+  let loadingEl = parentElement.querySelector('.loading');
+
+  if (!loadingEl){
+    loadingEl = el('p', { class: 'loading'}, 'Leita að niðurtstöðum...')
+    parentElement.appendChild(loadingEl);
+  }
+
+  if (!searchForm){
+    return;
+  }
+  const button = searchForm.querySelector('button');
+  if (button) {
+    button.setAttribute('disabled', 'disabled');
+  }
 }
 
 /**
@@ -26,7 +45,21 @@ function setLoading(parentElement, searchForm = undefined) {
  * @param {Element | undefined} searchForm Leitarform sem á að gera virkt.
  */
 function setNotLoading(parentElement, searchForm = undefined) {
-  /* TODO útfæra */
+  const loading = parentElement.querySelector('.loading');
+
+  if (loading){
+    loading.remove();
+  }
+
+  if(!searchForm){
+    return;
+  }
+
+  const button = searchForm.querySelector('button[disabled]');
+
+  if (button){
+    button.removeAttribute('disabled');
+  }
 }
 
 /**
@@ -35,7 +68,26 @@ function setNotLoading(parentElement, searchForm = undefined) {
  * @param {string} query Leitarstrengur.
  */
 function createSearchResults(results, query) {
-  /* TODO útfæra */
+  const list = el('ul', { class: 'searchResults'});
+  if(!results){
+    const noResultElement = el('li', {}, 'Villa');
+    list.appendChild(noResultElement)
+  }
+
+  if (results.length === 0){
+    const noResultElement = el('li', {}, 'Engar niðurstöður');
+    list.appendChild(noResultElement)
+  }
+  
+  for (const result of results){
+    const resultElement = el('li', { class: 'result'},
+    el('span', { class:'name'}, result.name),
+    el('span', { class:'mission'}, result.mission)
+    );
+
+    list.appendChild(resultElement);
+  }
+  return list;
 }
 
 /**
@@ -45,7 +97,25 @@ function createSearchResults(results, query) {
  * @param {string} query Leitarstrengur.
  */
 export async function searchAndRender(parentElement, searchForm, query) {
-  /* TODO útfæra */
+  const mainElement = parentElement.querySelector('main');
+
+  if(!mainElement){
+    console.warn('main element fannst ekki')
+    return;
+  }
+
+  const resultElement = mainElement.querySelector('.searchResults');
+  if (resultElement){
+    resultElement.remove();
+  }
+
+  setLoading(mainElement, searchForm);
+  const results = await searchLaunches(query);
+  setNotLoading(mainElement, searchForm);
+
+  const resultsEl = createSearchResults(results, query);
+
+  mainElement.appendChild(resultsEl);
 }
 
 /**
@@ -59,7 +129,7 @@ export function renderFrontpage(
   searchHandler,
   query = undefined,
 ) {
-  const heading = el('h1', {}, 'Geimskotaleitin 🚀');
+  const heading = el('h1', { class: 'header'}, 'Geimskotaleitin 🚀');
   const searchForm = renderSearchForm(searchHandler, query);
   const container = el('main', {}, heading, searchForm);
   parentElement.appendChild(container);
