@@ -66,5 +66,35 @@ export async function searchLaunches(query) {
  * @returns {Promise<LaunchDetail | null>} Geimskot.
  */
 export async function getLaunch(id) {
-  /* TODO útfæra */
+  const url = new URL('launch', API_URL);
+  url.searchParams.set('id', id);
+  
+  let response;
+  try{
+    response = await fetch(url);
+  } catch (e){
+    console.error('villa', e);
+    return null;
+  }
+
+  if (!response.ok){
+    console.error('villa við að sækja gögn', response.status, response.statusText);
+    return null;
+  }
+
+  let json;
+  try{
+    json = await response.json();
+  }catch (e){
+    console.error('villa í json vinnslu');
+    return null;
+  }
+  return {
+    name: json.name,
+    status: json.status,
+    mission: json.mission,
+    window_start: json.window_start,
+    window_end: json.window_end,
+    image: json.image
+  };
 }

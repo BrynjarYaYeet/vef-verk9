@@ -38,6 +38,8 @@ function route() {
   }else{
     renderFrontpage(parentElement, onSearch, query); 
   }
+
+  
 }
 
 // Bregst við því þegar við notum vafra til að fara til baka eða áfram.

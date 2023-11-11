@@ -84,11 +84,10 @@ function createSearchResults(results, query) {
   tafla.appendChild(taflaHeader);
   for (const result of results){
     const resultElement = el('td', { class: 'result'},
-    el('span', { class:'name'}, 'Nafn: ' , result.name, ' ---- '),
+    el('a', { class:'name', href:''}, 'Nafn: ' , result.name, ' ---- '),
     el('span', { class:'status'}, 'Staða: ', result.status.name, ' ---- '),
     el('span', { class:'mission'}, 'Mission: ', result.mission)
     );
-    console.log(result.status.name);
 
     tafla.appendChild(resultElement);
   }
@@ -152,7 +151,26 @@ export function renderFrontpage(
  * @param {string} id Auðkenni geimskots.
  */
 export async function renderDetails(parentElement, id) {
-  const container = el('main', {});
+  setLoading(parentElement);
+  const result = await getLaunch(id);
+  setNotLoading(parentElement);
+
+  if (!result){
+    const noResultElement = el('tr', 
+    {}, 'Villa');
+    parentElement.appendChild(noResultElement);
+    return;
+  }
+  
+  const container = el('main', { class:'detailMain' }, 
+  el('h1', { class:'launchName'}, `${result.name}`),
+  el('span', { class:'startTime'}, `${result.window_start}`),
+  el('span', { class: 'endTime'}, `${result.window_end}`),
+  el('span', { class: 'resultName'}, `${result.name}`),
+  el('span', {  class:'resultMissionName'}, `${result.mission}`),
+  el('img'), { class:'resultImg', src:`${result.image}`});
+
+
   const backElement = el(
     'div',
     { class: 'back' },
@@ -160,14 +178,12 @@ export async function renderDetails(parentElement, id) {
   );
 
   parentElement.appendChild(container);
+  container.appendChild(backElement);
 
   /* TODO setja loading state og sækja gögn */
 
   // Tómt og villu state, við gerum ekki greinarmun á þessu tvennu, ef við
   // myndum vilja gera það þyrftum við að skilgreina stöðu fyrir niðurstöðu
-  if (!result) {
-    /* TODO útfæra villu og tómt state */
-  }
 
   /* TODO útfæra ef gögn */
 }
