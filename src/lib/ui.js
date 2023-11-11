@@ -68,26 +68,31 @@ function setNotLoading(parentElement, searchForm = undefined) {
  * @param {string} query Leitarstrengur.
  */
 function createSearchResults(results, query) {
-  const list = el('ul', { class: 'searchResults'});
+  const tafla = el('table', { class: 'searchResults'});
   if(!results){
-    const noResultElement = el('li', {}, 'Villa');
-    list.appendChild(noResultElement)
+    const noResultElement = el('tr', {}, 'Villa');
+    tafla.appendChild(noResultElement);
   }
 
   if (results.length === 0){
-    const noResultElement = el('li', {}, 'Engar niðurstöður');
-    list.appendChild(noResultElement)
+    const noResultElement = el('tr', {}, 'Engar niðurstöður');
+    tafla.appendChild(noResultElement);
   }
-  
-  for (const result of results){
-    const resultElement = el('li', { class: 'result'},
-    el('span', { class:'name'}, result.name),
-    el('span', { class:'mission'}, result.mission)
-    );
 
-    list.appendChild(resultElement);
+  const taflaHeader = el('tr', { class: 'resultHeader'},'Niðurstöður úr leit!');
+  
+  tafla.appendChild(taflaHeader);
+  for (const result of results){
+    const resultElement = el('td', { class: 'result'},
+    el('span', { class:'name'}, 'Nafn: ' , result.name, ' ---- '),
+    el('span', { class:'status'}, 'Staða: ', result.status.name, ' ---- '),
+    el('span', { class:'mission'}, 'Mission: ', result.mission)
+    );
+    console.log(result.status.name);
+
+    tafla.appendChild(resultElement);
   }
-  return list;
+  return tafla;
 }
 
 /**
